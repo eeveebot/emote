@@ -1,4 +1,5 @@
 import { NatsClient, log } from '@eeveebot/libeevee';
+import { colorizeForPlatform } from '../utils/colorize.mjs';
 
 export interface CommandHandlerParams {
   nats: InstanceType<typeof NatsClient>;
@@ -24,13 +25,43 @@ export async function handleShrugCommand({
           originalText: data.originalText,
         });
 
+        // Shrug faces array
+        const faces = [
+          '¯\\_(ツ)_/¯',
+          '¯\\_(ツ)_/¯',
+          'ʅ(°_°)ʃ',
+          '┐(´д｀)┌',
+          '┐(・–・)┌',
+          '┐(￣ヘ￣;)┌',
+          'ヽ(。_°)ノ',
+          'ヽ(´～｀；）',
+          'ヽ(。_°)ノ',
+          '¯\\_(⊙_ʖ⊙)_/¯',
+          '¯\\_(^▽^)_/¯',
+          '¯\\_(°_ʖ°)_/¯',
+          '¯\\_(•_ʖ•)_/¯',
+          '¯\\_(•_ʖ•)_/¯',
+          '¯\\_(ツ)_/¯',
+          '¯\\_(ツ)_/¯',
+          '¯\\_( ͡° ͜ʖ ͡°)_/¯',
+          '¯\\_( ͠° ͟ʖ ͠°)_/¯',
+          '¯\\_( ͡ʘ ͜ʖ ͡ʘ)_/¯',
+          '¯\\_( ͡~ ͜ʖ ͡°)_/¯'
+        ];
+
+        // Select a random face
+        const selectedFace = faces[Math.floor(Math.random() * faces.length)];
+        
+        // Colorize for IRC platform
+        const coloredShrug = colorizeForPlatform(selectedFace, data.platform);
+
         // Send response on chat.message.outgoing.$PLATFORM.$INSTANCE.$CHANNEL
         const response = {
           channel: data.channel,
           network: data.network,
           instance: data.instance,
           platform: data.platform,
-          text: '¯\\_(ツ)_/¯',
+          text: coloredShrug,
           trace: data.trace,
           type: 'message.outgoing',
         };

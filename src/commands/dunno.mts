@@ -1,4 +1,5 @@
 import { NatsClient, log } from '@eeveebot/libeevee';
+import { colorizeForPlatform } from '../utils/colorize.mjs';
 
 export interface CommandHandlerParams {
   nats: InstanceType<typeof NatsClient>;
@@ -40,13 +41,16 @@ export async function handleDunnoCommand({
         // Select a random face
         const selectedFace = faces[Math.floor(Math.random() * faces.length)];
 
+        // Colorize for IRC platform
+        const coloredFace = colorizeForPlatform(selectedFace, data.platform);
+
         // Send response on chat.message.outgoing.$PLATFORM.$INSTANCE.$CHANNEL
         const response = {
           channel: data.channel,
           network: data.network,
           instance: data.instance,
           platform: data.platform,
-          text: selectedFace,
+          text: coloredFace,
           trace: data.trace,
           type: 'message.outgoing',
         };
