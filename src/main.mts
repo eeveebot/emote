@@ -1,31 +1,91 @@
 'use strict';
 
-// Echo module
-// listens for messages, echos them back
+// Emote module
+// provides various emote commands like dunno, shrug, downy, etc.
 
 import fs from 'node:fs';
 import yaml from 'js-yaml';
 import { NatsClient, log } from '@eeveebot/libeevee';
+import { 
+  registerAllCommands, 
+  setupCommandHandlers
+} from './commandRegistry.mjs';
 
 // Record module startup time for uptime tracking
 const moduleStartTime = Date.now();
 
+// Rate limit configuration interface
+interface RateLimitConfig {
+  mode: 'enqueue' | 'drop';
+  level: 'channel' | 'user' | 'global';
+  limit: number;
+  interval: string; // e.g., "30s", "1m", "5m"
+}
+
+// Emote module configuration interface
+interface EmoteConfig {
+  ratelimit?: RateLimitConfig;
+}
+
 const natsClients: InstanceType<typeof NatsClient>[] = [];
 const natsSubscriptions: Array<Promise<string | boolean>> = [];
 
-//
-// Do whatever teardown is necessary before calling common handler
-process.on('SIGINT', () => {
-  natsClients.forEach((natsClient) => {
-    void natsClient.drain();
-  });
-});
+/**
+ * Load emote configuration from YAML file
+ * @returns EmoteConfig parsed from YAML file
+ */
+function loadEmoteConfig(): EmoteConfig {
+  // Get the config file path from environment variable
+  const configPath = process.env.MODULE_CONFIG_PATH;
+  if (!configPath) {
+    log.warn('MODULE_CONFIG_PATH not set, using default rate limit config', {
+      producer: 'emote',
+    });
+    return {};
+  }
 
-process.on('SIGTERM', () => {
-  natsClients.forEach((natsClient) => {
-    void natsClient.drain();
-  });
-});
+  try {
+    // Read the YAML file
+    const configFile = fs.readFileSync(configPath, 'utf8');
+
+    // Parse the YAML content
+    const config = yaml.load(configFile) as EmoteConfig;
+
+    log.info('Loaded emote configuration', {
+      producer: 'emote',
+      configPath,
+    });
+
+    return config;
+  } catch (error) {
+    log.error('Failed to load emote configuration, using defaults', {
+      producer: 'emote',
+      configPath,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return {};
+  }
+}
+
+// Load configuration at startup
+const emoteConfig = loadEmoteConfig();
+
+// Default rate limit configuration
+const defaultRateLimit: RateLimitConfig = {
+  mode: 'drop',
+  level: 'user',
+  limit: 5,
+  interval: '1m',
+};
+
+// Use configured rate limit or default
+const rateLimitConfig: RateLimitConfig = emoteConfig.ratelimit || defaultRateLimit;
+
+// Function to register all emote commands with the router
+async function registerEmoteCommands(): Promise<void> {
+  // Register all commands using the command registry
+  await registerAllCommands(nats, rateLimitConfig);
+}
 
 //
 // Setup NATS connection
@@ -50,12 +110,15 @@ const nats = new NatsClient({
 natsClients.push(nats);
 await nats.connect();
 
+// Register commands at startup
+await registerEmoteCommands();
+
 // Subscribe to stats.uptime messages and respond with module uptime
 const statsUptimeSub = nats.subscribe('stats.uptime', (subject, message) => {
   try {
     const data = JSON.parse(message.string());
     log.info('Received stats.uptime request', {
-      producer: 'echo',
+      producer: 'emote',
       replyChannel: data.replyChannel,
     });
 
@@ -64,7 +127,7 @@ const statsUptimeSub = nats.subscribe('stats.uptime', (subject, message) => {
 
     // Send uptime back via the ephemeral reply channel
     const uptimeResponse = {
-      module: 'echo',
+      module: 'emote',
       uptime: uptime,
       uptimeFormatted: `${Math.floor(uptime / 86400000)}d ${Math.floor((uptime % 86400000) / 3600000)}h ${Math.floor((uptime % 3600000) / 60000)}m ${Math.floor((uptime % 60000) / 1000)}s`,
     };
@@ -74,9 +137,110 @@ const statsUptimeSub = nats.subscribe('stats.uptime', (subject, message) => {
     }
   } catch (error) {
     log.error('Failed to process stats.uptime request', {
-      producer: 'echo',
+      producer: 'emote',
       error: error,
     });
   }
 });
 natsSubscriptions.push(statsUptimeSub);
+
+// Set up all command handlers using the command registry
+const commandSubscriptions = await setupCommandHandlers(nats);
+natsSubscriptions.push(...commandSubscriptions);
+
+// Help information for emote commands
+const emoteHelp = [
+  {
+    command: 'dunno',
+    descr: 'dunno face',
+    params: [],
+  },
+  {
+    command: 'shrug',
+    descr: 'shrug face',
+    params: [],
+  },
+  {
+    command: 'dudeweed',
+    descr: 'dude weed lmao',
+    params: [],
+  },
+  {
+    command: 'downy',
+    descr: 'downy face',
+    params: [],
+  },
+  {
+    command: 'doubledowny',
+    descr: 'two downys in a row',
+    params: [],
+  },
+  {
+    command: 'tripledowny',
+    descr: 'three downys in a row',
+    params: [],
+  },
+  {
+    command: 'rainbowdowny',
+    descr: 'rainbow-ized downy face',
+    params: [],
+  },
+  {
+    command: 'id',
+    descr: 'illegal drugs',
+    params: [],
+  },
+  {
+    command: 'ld',
+    descr: 'legal drugs',
+    params: [],
+  },
+  {
+    command: 'lv',
+    descr: 'heart',
+    params: [],
+  },
+  {
+    command: 'intense',
+    descr: 'intensify your text',
+    params: [
+      {
+        param: 'text',
+        required: true,
+        descr: 'Text to intensify',
+      },
+    ],
+  },
+];
+
+// Function to publish help information
+async function publishHelp(): Promise<void> {
+  const helpUpdate = {
+    from: 'emote',
+    help: emoteHelp,
+  };
+
+  try {
+    await nats.publish('_help.update', JSON.stringify(helpUpdate));
+    log.info('Published emote help information', {
+      producer: 'emote',
+    });
+  } catch (error) {
+    log.error('Failed to publish emote help information', {
+      producer: 'emote',
+      error: error,
+    });
+  }
+}
+
+// Publish help information at startup
+await publishHelp();
+
+// Subscribe to help update requests
+const helpUpdateRequestSub = nats.subscribe('_help.updateRequest', () => {
+  log.info('Received _help.updateRequest message', {
+    producer: 'emote',
+  });
+  void publishHelp();
+});
+natsSubscriptions.push(helpUpdateRequestSub);
