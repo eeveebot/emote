@@ -1,4 +1,5 @@
 import { NatsClient, log } from '@eeveebot/libeevee';
+import { colorizeForPlatform } from '../utils/colorize.mjs';
 
 export interface CommandHandlerParams {
   nats: InstanceType<typeof NatsClient>;
@@ -36,6 +37,9 @@ export async function handleLdCommand({
         } else if (x == 29) {
           responseText = 'Your drug use has been logged and reported.';
         }
+
+        // Colorize for IRC platform
+        responseText = colorizeForPlatform(responseText, data.platform);
 
         // Send response on chat.message.outgoing.$PLATFORM.$INSTANCE.$CHANNEL
         const response = {

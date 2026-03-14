@@ -1,4 +1,5 @@
 import { NatsClient, log } from '@eeveebot/libeevee';
+import { colorizeForPlatform } from '../utils/colorize.mjs';
 
 export interface CommandHandlerParams {
   nats: InstanceType<typeof NatsClient>;
@@ -24,13 +25,19 @@ export async function handleTripledownyCommand({
           originalText: data.originalText,
         });
 
+        // Tripledowny text
+        const downyText = ".'\x1f/\x1f)";
+        
+        // Colorize for IRC platform
+        const coloredDowny = colorizeForPlatform(downyText, data.platform);
+
         // Send response on chat.message.outgoing.$PLATFORM.$INSTANCE.$CHANNEL
         const response = {
           channel: data.channel,
           network: data.network,
           instance: data.instance,
           platform: data.platform,
-          text: ".'\x1f/\x1f)",
+          text: coloredDowny,
           trace: data.trace,
           type: 'message.outgoing',
         };

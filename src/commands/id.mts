@@ -1,4 +1,5 @@
 import { NatsClient, log } from '@eeveebot/libeevee';
+import { colorizeForPlatform } from '../utils/colorize.mjs';
 
 export interface CommandHandlerParams {
   nats: InstanceType<typeof NatsClient>;
@@ -40,6 +41,9 @@ export async function handleIdCommand({
           ];
           responseText = dbladez[x];
         }
+
+        // Colorize for IRC platform
+        responseText = colorizeForPlatform(responseText, data.platform);
 
         // Send response on chat.message.outgoing.$PLATFORM.$INSTANCE.$CHANNEL
         const response = {
