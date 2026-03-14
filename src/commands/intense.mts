@@ -24,8 +24,8 @@ export async function handleIntenseCommand({
           originalText: data.originalText,
         });
 
-        // Extract the text to intensify (everything after "intense ")
-        const textToIntensify = data.originalText.replace(/^intense\s+/i, '');
+        // Extract the text to intensify
+        const textToIntensify = data.text;
 
         // Send response on chat.message.outgoing.$PLATFORM.$INSTANCE.$CHANNEL
         const response = {
