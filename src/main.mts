@@ -148,6 +148,140 @@ natsSubscriptions.push(statsUptimeSub);
 const commandSubscriptions = await setupCommandHandlers(nats);
 natsSubscriptions.push(...commandSubscriptions);
 
+// Subscribe to control messages for re-registering commands
+const controlSubRegisterCommandAll = nats.subscribe(
+  'control.registerCommands',
+  () => {
+    log.info('Received control.registerCommands control message', {
+      producer: 'emote',
+    });
+    void registerEmoteCommands();
+  }
+);
+natsSubscriptions.push(controlSubRegisterCommandAll);
+
+// Subscribe to control messages for re-registering individual commands
+const controlSubRegisterCommandDunno = nats.subscribe(
+  'control.registerCommands.dunno',
+  () => {
+    log.info('Received control.registerCommands.dunno control message', {
+      producer: 'emote',
+    });
+    void registerEmoteCommands();
+  }
+);
+natsSubscriptions.push(controlSubRegisterCommandDunno);
+
+const controlSubRegisterCommandShrug = nats.subscribe(
+  'control.registerCommands.shrug',
+  () => {
+    log.info('Received control.registerCommands.shrug control message', {
+      producer: 'emote',
+    });
+    void registerEmoteCommands();
+  }
+);
+natsSubscriptions.push(controlSubRegisterCommandShrug);
+
+const controlSubRegisterCommandDudeweed = nats.subscribe(
+  'control.registerCommands.dudeweed',
+  () => {
+    log.info('Received control.registerCommands.dudeweed control message', {
+      producer: 'emote',
+    });
+    void registerEmoteCommands();
+  }
+);
+natsSubscriptions.push(controlSubRegisterCommandDudeweed);
+
+const controlSubRegisterCommandDowny = nats.subscribe(
+  'control.registerCommands.downy',
+  () => {
+    log.info('Received control.registerCommands.downy control message', {
+      producer: 'emote',
+    });
+    void registerEmoteCommands();
+  }
+);
+natsSubscriptions.push(controlSubRegisterCommandDowny);
+
+const controlSubRegisterCommandDoubledowny = nats.subscribe(
+  'control.registerCommands.doubledowny',
+  () => {
+    log.info('Received control.registerCommands.doubledowny control message', {
+      producer: 'emote',
+    });
+    void registerEmoteCommands();
+  }
+);
+natsSubscriptions.push(controlSubRegisterCommandDoubledowny);
+
+const controlSubRegisterCommandTripledowny = nats.subscribe(
+  'control.registerCommands.tripledowny',
+  () => {
+    log.info('Received control.registerCommands.tripledowny control message', {
+      producer: 'emote',
+    });
+    void registerEmoteCommands();
+  }
+);
+natsSubscriptions.push(controlSubRegisterCommandTripledowny);
+
+const controlSubRegisterCommandRainbowdowny = nats.subscribe(
+  'control.registerCommands.rainbowdowny',
+  () => {
+    log.info('Received control.registerCommands.rainbowdowny control message', {
+      producer: 'emote',
+    });
+    void registerEmoteCommands();
+  }
+);
+natsSubscriptions.push(controlSubRegisterCommandRainbowdowny);
+
+const controlSubRegisterCommandId = nats.subscribe(
+  'control.registerCommands.id',
+  () => {
+    log.info('Received control.registerCommands.id control message', {
+      producer: 'emote',
+    });
+    void registerEmoteCommands();
+  }
+);
+natsSubscriptions.push(controlSubRegisterCommandId);
+
+const controlSubRegisterCommandLd = nats.subscribe(
+  'control.registerCommands.ld',
+  () => {
+    log.info('Received control.registerCommands.ld control message', {
+      producer: 'emote',
+    });
+    void registerEmoteCommands();
+  }
+);
+natsSubscriptions.push(controlSubRegisterCommandLd);
+
+const controlSubRegisterCommandLv = nats.subscribe(
+  'control.registerCommands.lv',
+  () => {
+    log.info('Received control.registerCommands.lv control message', {
+      producer: 'emote',
+    });
+    void registerEmoteCommands();
+  }
+);
+natsSubscriptions.push(controlSubRegisterCommandLv);
+
+const controlSubRegisterCommandIntense = nats.subscribe(
+  'control.registerCommands.intense',
+  () => {
+    log.info('Received control.registerCommands.intense control message', {
+      producer: 'emote',
+    });
+    void registerEmoteCommands();
+  }
+);
+natsSubscriptions.push(controlSubRegisterCommandIntense);
+
 // Help information for emote commands
 const emoteHelp = [
   {
