@@ -46,12 +46,12 @@ export async function handleShrugCommand({
           '¯\\_( ͡° ͜ʖ ͡°)_/¯',
           '¯\\_( ͠° ͟ʖ ͠°)_/¯',
           '¯\\_( ͡ʘ ͜ʖ ͡ʘ)_/¯',
-          '¯\\_( ͡~ ͜ʖ ͡°)_/¯'
+          '¯\\_( ͡~ ͜ʖ ͡°)_/¯',
         ];
 
         // Select a random face
         const selectedFace = faces[Math.floor(Math.random() * faces.length)];
-        
+
         // Colorize for IRC platform
         const coloredShrug = colorizeForPlatform(selectedFace, data.platform);
 

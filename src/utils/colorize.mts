@@ -1,4 +1,5 @@
 import * as ircColors from 'irc-colors';
+import { log } from '@eeveebot/libeevee';
 
 // Available irc-colors for random selection
 const colors = [
@@ -24,12 +25,41 @@ const colors = [
  * @returns Colorized text if platform is IRC, otherwise original text
  */
 export function colorizeForPlatform(text: string, platform: string): string {
+  log.debug('colorizeForPlatform called', {
+    producer: 'emote',
+    text: text,
+    platform: platform,
+  });
+
   // Only apply colorization for IRC platform
   if (platform === 'irc') {
-    // Pick a random color from the available colors
-    const randomColor = colors[Math.floor(Math.random() * colors.length)];
-    return randomColor(text);
+    try {
+      // Pick a random color from the available colors
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+      const coloredText = randomColor(text);
+
+      log.debug('Successfully colorized text for IRC', {
+        producer: 'emote',
+        originalText: text,
+        coloredText: coloredText,
+      });
+
+      return coloredText;
+    } catch (error) {
+      log.error('Failed to colorize text for IRC', {
+        producer: 'emote',
+        text: text,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return text;
+    }
   }
+
+  log.debug('Returning original text for non-IRC platform', {
+    producer: 'emote',
+    text: text,
+    platform: platform,
+  });
 
   // Return original text for non-IRC platforms
   return text;
