@@ -205,7 +205,7 @@ export async function registerAllCommands(
       instance: '.*',
       channel: '.*',
       user: '.*',
-      regex: '^intense ',
+       regex: '^intense\\s+',
       platformPrefixAllowed: true,
       ratelimit: rateLimitConfig,
     },
