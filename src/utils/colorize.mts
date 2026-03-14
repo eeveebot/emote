@@ -12,11 +12,9 @@ const colors = [
   ircColors.white,
   ircColors.gray,
   ircColors.lightgreen,
-  ircColors.lightyellow,
-  ircColors.lightblue,
   ircColors.pink,
   ircColors.lightgray,
-];
+].filter((color) => typeof color === 'function');
 
 /**
  * Colorize text only if platform is IRC
