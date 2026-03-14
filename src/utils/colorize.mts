@@ -1,22 +1,20 @@
-import chalk from 'chalk';
+import * as ircColors from 'irc-colors';
 
-// Available chalk colors for random selection
+// Available irc-colors for random selection
 const colors = [
-  chalk.red,
-  chalk.green,
-  chalk.yellow,
-  chalk.blue,
-  chalk.magenta,
-  chalk.cyan,
-  chalk.white,
-  chalk.gray,
-  chalk.redBright,
-  chalk.greenBright,
-  chalk.yellowBright,
-  chalk.blueBright,
-  chalk.magentaBright,
-  chalk.cyanBright,
-  chalk.whiteBright,
+  ircColors.red,
+  ircColors.green,
+  ircColors.yellow,
+  ircColors.blue,
+  ircColors.purple,
+  ircColors.cyan,
+  ircColors.white,
+  ircColors.gray,
+  ircColors.lightgreen,
+  ircColors.lightyellow,
+  ircColors.lightblue,
+  ircColors.pink,
+  ircColors.lightgray,
 ];
 
 /**
@@ -27,12 +25,12 @@ const colors = [
  */
 export function colorizeForPlatform(text: string, platform: string): string {
   // Only apply colorization for IRC platform
-  if (platform.toLowerCase() === 'irc') {
+  if (platform === 'irc') {
     // Pick a random color from the available colors
     const randomColor = colors[Math.floor(Math.random() * colors.length)];
     return randomColor(text);
   }
-  
+
   // Return original text for non-IRC platforms
   return text;
 }
