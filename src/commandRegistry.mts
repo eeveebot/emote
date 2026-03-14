@@ -12,17 +12,17 @@ import { handleLvCommand } from './commands/lv.mjs';
 import { handleIntenseCommand } from './commands/intense.mjs';
 
 // Emote command UUIDs
-export const dunnoCommandUUID = '0AC87398-83B6-42A1-8AAA-86AC3B6FB520';
-export const shrugCommandUUID = '4756864A-DCF2-47EB-9E3E-BBC2E8B4E890';
-export const dudeweedCommandUUID = '03CA4BBE-6A6F-456B-A47E-8BA9242AEBA1';
-export const downyCommandUUID = '2AA74B6E-3BB9-400B-BF8A-6277864AAF84';
-export const doubledownyCommandUUID = '5E81EF72-F7E6-442C-97B2-3576C9134B7B';
-export const tripledownyCommandUUID = 'D28FB23A-3DDA-4E18-8FEE-E162620F3F4D';
-export const rainbowdownyCommandUUID = '089DABF3-FE9F-4795-AA64-8E0F233E9A73';
-export const idCommandUUID = 'BA3BBCB3-61EA-4A46-9460-072DB00AA903';
-export const ldCommandUUID = 'A0B9079E-3633-4D1A-8FC8-1B9CD18C0CEB';
-export const lvCommandUUID = 'D07043BE-2BD8-47B4-BD03-D741A4B7623F';
-export const intenseCommandUUID = '80ED7F0B-E3DF-4184-8898-1E9695599BA2';
+export const dunnoCommandUUID = '0ac87398-83b6-42a1-8aaa-86ac3b6fb520';
+export const shrugCommandUUID = '4756864a-dcf2-47eb-9e3e-bbc2e8b4e890';
+export const dudeweedCommandUUID = '03ca4bbe-6a6f-456b-a47e-8ba9242aeba1';
+export const downyCommandUUID = '2aa74b6e-3bb9-400b-bf8a-6277864aaf84';
+export const doubledownyCommandUUID = '5e81ef72-f7e6-442c-97b2-3576c9134b7b';
+export const tripledownyCommandUUID = 'd28fb23a-3dda-4e18-8fee-e162620f3f4d';
+export const rainbowdownyCommandUUID = '089dabf3-fe9f-4795-aa64-8e0f233e9a73';
+export const idCommandUUID = 'ba3bbcb3-61ea-4a46-9460-072db00aa903';
+export const ldCommandUUID = 'a0b9079e-3633-4d1a-8fc8-1b9cd18c0ceb';
+export const lvCommandUUID = 'd07043be-2bd8-47b4-bd03-d741a4b7623f';
+export const intenseCommandUUID = '80ed7f0b-e3df-4184-8898-1e9695599ba2';
 
 export interface CommandRegistration {
   type: 'command.register';
