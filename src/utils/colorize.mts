@@ -1,32 +1,29 @@
-import * as ircColors from 'irc-colors';
-import { log } from '@eeveebot/libeevee';
+import { ircColors, log } from '@eeveebot/libeevee';
 
 // Available irc-colors for random selection
-// Using a more defensive approach to avoid runtime errors
 const colors: ((text: string) => string)[] = [];
 
-// Handle both ES module and CommonJS imports
-const ircColorsObj =
-  (ircColors as unknown as { default?: typeof ircColors }).default || ircColors;
-
-// Only include the colors we know exist and are safe to use
+// Include a more comprehensive set of available IRC colors
 const safeColors = [
-  'red',
+  'navy',
   'green',
-  'yellow',
-  'blue',
+  'red',
+  'brown',
+  'maroon',
   'purple',
-  'cyan',
-  'white',
-  'gray',
+  'orange',
+  'yellow',
   'lightgreen',
+  'teal',
+  'cyan',
+  'blue',
   'pink',
-  'lightgray',
+  'silver',
 ] as const;
 
 for (const colorName of safeColors) {
   // Use bracket notation to access color functions
-  const colorFunc = ircColorsObj[colorName];
+  const colorFunc = ircColors[colorName];
   if (typeof colorFunc === 'function') {
     colors.push(colorFunc);
   }

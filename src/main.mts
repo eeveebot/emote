@@ -6,9 +6,9 @@
 import fs from 'node:fs';
 import yaml from 'js-yaml';
 import { NatsClient, log } from '@eeveebot/libeevee';
-import { 
-  registerAllCommands, 
-  setupCommandHandlers
+import {
+  registerAllCommands,
+  setupCommandHandlers,
 } from './commandRegistry.mjs';
 
 // Record module startup time for uptime tracking
@@ -79,7 +79,8 @@ const defaultRateLimit: RateLimitConfig = {
 };
 
 // Use configured rate limit or default
-const rateLimitConfig: RateLimitConfig = emoteConfig.ratelimit || defaultRateLimit;
+const rateLimitConfig: RateLimitConfig =
+  emoteConfig.ratelimit || defaultRateLimit;
 
 // Function to register all emote commands with the router
 async function registerEmoteCommands(): Promise<void> {

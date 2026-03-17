@@ -205,7 +205,7 @@ export async function registerAllCommands(
       instance: '.*',
       channel: '.*',
       user: '.*',
-       regex: '^intense\\s+',
+      regex: '^intense\\s+',
       platformPrefixAllowed: true,
       ratelimit: rateLimitConfig,
     },
@@ -270,15 +270,9 @@ export async function setupCommandHandlers(
       commandUUID: rainbowdownyCommandUUID,
     })
   );
-  subscriptions.push(
-    handleIdCommand({ nats, commandUUID: idCommandUUID })
-  );
-  subscriptions.push(
-    handleLdCommand({ nats, commandUUID: ldCommandUUID })
-  );
-  subscriptions.push(
-    handleLvCommand({ nats, commandUUID: lvCommandUUID })
-  );
+  subscriptions.push(handleIdCommand({ nats, commandUUID: idCommandUUID }));
+  subscriptions.push(handleLdCommand({ nats, commandUUID: ldCommandUUID }));
+  subscriptions.push(handleLvCommand({ nats, commandUUID: lvCommandUUID }));
   subscriptions.push(
     handleIntenseCommand({ nats, commandUUID: intenseCommandUUID })
   );

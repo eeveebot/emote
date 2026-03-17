@@ -26,7 +26,10 @@ export async function handleDudeweedCommand({
         });
 
         // Colorize for IRC platform
-        const coloredText = colorizeForPlatform('dude weed lmao', data.platform);
+        const coloredText = colorizeForPlatform(
+          'dude weed lmao',
+          data.platform
+        );
 
         // Send response on chat.message.outgoing.$PLATFORM.$INSTANCE.$CHANNEL
         const response = {

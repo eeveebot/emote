@@ -27,7 +27,7 @@ export async function handleTripledownyCommand({
 
         // Tripledowny text
         const downyText = ".'\x1f/\x1f)";
-        
+
         // Colorize for IRC platform
         const coloredDowny = colorizeForPlatform(downyText, data.platform);
 
