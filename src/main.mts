@@ -11,6 +11,26 @@ import {
   setupCommandHandlers,
 } from './commandRegistry.mjs';
 
+// Import metrics
+import {
+  initializeSystemMetrics,
+  setupHttpServer,
+  register,
+} from '@eeveebot/libeevee';
+import {
+  recordNatsPublish,
+  recordNatsSubscribe,
+} from './lib/metrics.mjs';
+
+// Initialize system metrics
+initializeSystemMetrics('emote');
+
+// Setup HTTP server for metrics and health checks
+setupHttpServer({
+  port: process.env.HTTP_API_PORT || '9000',
+  serviceName: 'emote',
+});
+
 // Record module startup time for uptime tracking
 const moduleStartTime = Date.now();
 
@@ -116,6 +136,7 @@ await registerEmoteCommands();
 
 // Subscribe to stats.uptime messages and respond with module uptime
 const statsUptimeSub = nats.subscribe('stats.uptime', (subject, message) => {
+  recordNatsSubscribe(subject);
   try {
     const data = JSON.parse(message.string());
     log.info('Received stats.uptime request', {
@@ -135,6 +156,7 @@ const statsUptimeSub = nats.subscribe('stats.uptime', (subject, message) => {
 
     if (data.replyChannel) {
       void nats.publish(data.replyChannel, JSON.stringify(uptimeResponse));
+      recordNatsPublish(data.replyChannel, 'uptime_response');
     }
   } catch (error) {
     log.error('Failed to process stats.uptime request', {
@@ -152,7 +174,8 @@ natsSubscriptions.push(...commandSubscriptions);
 // Subscribe to control messages for re-registering commands
 const controlSubRegisterCommandAll = nats.subscribe(
   'control.registerCommands',
-  () => {
+  (subject) => {
+    recordNatsSubscribe(subject);
     log.info('Received control.registerCommands control message', {
       producer: 'emote',
     });
@@ -164,7 +187,8 @@ natsSubscriptions.push(controlSubRegisterCommandAll);
 // Subscribe to control messages for re-registering individual commands
 const controlSubRegisterCommandDunno = nats.subscribe(
   'control.registerCommands.dunno',
-  () => {
+  (subject) => {
+    recordNatsSubscribe(subject);
     log.info('Received control.registerCommands.dunno control message', {
       producer: 'emote',
     });
@@ -175,7 +199,8 @@ natsSubscriptions.push(controlSubRegisterCommandDunno);
 
 const controlSubRegisterCommandShrug = nats.subscribe(
   'control.registerCommands.shrug',
-  () => {
+  (subject) => {
+    recordNatsSubscribe(subject);
     log.info('Received control.registerCommands.shrug control message', {
       producer: 'emote',
     });
@@ -186,7 +211,8 @@ natsSubscriptions.push(controlSubRegisterCommandShrug);
 
 const controlSubRegisterCommandDudeweed = nats.subscribe(
   'control.registerCommands.dudeweed',
-  () => {
+  (subject) => {
+    recordNatsSubscribe(subject);
     log.info('Received control.registerCommands.dudeweed control message', {
       producer: 'emote',
     });
@@ -197,7 +223,8 @@ natsSubscriptions.push(controlSubRegisterCommandDudeweed);
 
 const controlSubRegisterCommandDowny = nats.subscribe(
   'control.registerCommands.downy',
-  () => {
+  (subject) => {
+    recordNatsSubscribe(subject);
     log.info('Received control.registerCommands.downy control message', {
       producer: 'emote',
     });
@@ -208,7 +235,8 @@ natsSubscriptions.push(controlSubRegisterCommandDowny);
 
 const controlSubRegisterCommandDoubledowny = nats.subscribe(
   'control.registerCommands.doubledowny',
-  () => {
+  (subject) => {
+    recordNatsSubscribe(subject);
     log.info('Received control.registerCommands.doubledowny control message', {
       producer: 'emote',
     });
@@ -219,7 +247,8 @@ natsSubscriptions.push(controlSubRegisterCommandDoubledowny);
 
 const controlSubRegisterCommandTripledowny = nats.subscribe(
   'control.registerCommands.tripledowny',
-  () => {
+  (subject) => {
+    recordNatsSubscribe(subject);
     log.info('Received control.registerCommands.tripledowny control message', {
       producer: 'emote',
     });
@@ -230,7 +259,8 @@ natsSubscriptions.push(controlSubRegisterCommandTripledowny);
 
 const controlSubRegisterCommandRainbowdowny = nats.subscribe(
   'control.registerCommands.rainbowdowny',
-  () => {
+  (subject) => {
+    recordNatsSubscribe(subject);
     log.info('Received control.registerCommands.rainbowdowny control message', {
       producer: 'emote',
     });
@@ -241,7 +271,8 @@ natsSubscriptions.push(controlSubRegisterCommandRainbowdowny);
 
 const controlSubRegisterCommandId = nats.subscribe(
   'control.registerCommands.id',
-  () => {
+  (subject) => {
+    recordNatsSubscribe(subject);
     log.info('Received control.registerCommands.id control message', {
       producer: 'emote',
     });
@@ -252,7 +283,8 @@ natsSubscriptions.push(controlSubRegisterCommandId);
 
 const controlSubRegisterCommandLd = nats.subscribe(
   'control.registerCommands.ld',
-  () => {
+  (subject) => {
+    recordNatsSubscribe(subject);
     log.info('Received control.registerCommands.ld control message', {
       producer: 'emote',
     });
@@ -263,7 +295,8 @@ natsSubscriptions.push(controlSubRegisterCommandLd);
 
 const controlSubRegisterCommandLv = nats.subscribe(
   'control.registerCommands.lv',
-  () => {
+  (subject) => {
+    recordNatsSubscribe(subject);
     log.info('Received control.registerCommands.lv control message', {
       producer: 'emote',
     });
@@ -274,7 +307,8 @@ natsSubscriptions.push(controlSubRegisterCommandLv);
 
 const controlSubRegisterCommandIntense = nats.subscribe(
   'control.registerCommands.intense',
-  () => {
+  (subject) => {
+    recordNatsSubscribe(subject);
     log.info('Received control.registerCommands.intense control message', {
       producer: 'emote',
     });
@@ -357,8 +391,10 @@ async function publishHelp(): Promise<void> {
 
   try {
     await nats.publish('help.update', JSON.stringify(helpUpdate));
+    recordNatsPublish('help.update', 'help_update');
     log.info('Published emote help information', {
       producer: 'emote',
+      helpCommandCount: emoteHelp.length,
     });
   } catch (error) {
     log.error('Failed to publish emote help information', {
@@ -372,10 +408,68 @@ async function publishHelp(): Promise<void> {
 await publishHelp();
 
 // Subscribe to help update requests
-const helpUpdateRequestSub = nats.subscribe('help.updateRequest', () => {
+const helpUpdateRequestSub = nats.subscribe('help.updateRequest', (subject) => {
+  recordNatsSubscribe(subject);
   log.info('Received help.updateRequest message', {
     producer: 'emote',
   });
   void publishHelp();
 });
 natsSubscriptions.push(helpUpdateRequestSub);
+
+// Subscribe to stats.emit.request messages and respond with full module stats
+const statsEmitRequestSub = nats.subscribe(
+  'stats.emit.request',
+  (subject, message) => {
+    recordNatsSubscribe(subject);
+    try {
+      const data = JSON.parse(message.string());
+      log.info('Received stats.emit.request', {
+        producer: 'emote',
+        replyChannel: data.replyChannel,
+      });
+
+      // Calculate uptime in milliseconds
+      const uptime = Date.now() - moduleStartTime;
+
+      // Get all prom-client metrics
+      void register
+        .metrics()
+        .then((prometheusMetrics) => {
+          // Get memory usage information
+          const memoryUsage = process.memoryUsage();
+
+          // Send stats back via the ephemeral reply channel
+          const statsResponse = {
+            module: 'emote',
+            stats: {
+              uptime_seconds: Math.floor(uptime / 1000),
+              uptime_formatted: `${Math.floor(uptime / 86400000)}d ${Math.floor((uptime % 86400000) / 3600000)}h ${Math.floor((uptime % 3600000) / 60000)}m ${Math.floor((uptime % 60000) / 1000)}s`,
+              memory_rss_mb: Math.round(memoryUsage.rss / (1024 * 1024)),
+              memory_heap_used_mb: Math.round(
+                memoryUsage.heapUsed / (1024 * 1024)
+              ),
+              prometheus_metrics: prometheusMetrics,
+            },
+          };
+
+          if (data.replyChannel) {
+            void nats.publish(data.replyChannel, JSON.stringify(statsResponse));
+            recordNatsPublish(data.replyChannel, 'stats_response');
+          }
+        })
+        .catch((error) => {
+          log.error('Failed to collect prometheus metrics', {
+            producer: 'emote',
+            error: error,
+          });
+        });
+    } catch (error) {
+      log.error('Failed to process stats.emit.request', {
+        producer: 'emote',
+        error: error,
+      });
+    }
+  }
+);
+natsSubscriptions.push(statsEmitRequestSub);

@@ -1,4 +1,5 @@
 import { NatsClient, log } from '@eeveebot/libeevee';
+import { recordNatsPublish } from './lib/metrics.mjs';
 import { handleDunnoCommand } from './commands/dunno.mjs';
 import { handleShrugCommand } from './commands/shrug.mjs';
 import { handleDudeweedCommand } from './commands/dudeweed.mjs';
@@ -215,6 +216,7 @@ export async function registerAllCommands(
   for (const registration of commandRegistrations) {
     try {
       await nats.publish('command.register', JSON.stringify(registration));
+      recordNatsPublish('command.register', 'command_registration');
       log.info(
         `Registered ${registration.commandDisplayName} command with router`,
         {
