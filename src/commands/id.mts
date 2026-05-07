@@ -1,4 +1,4 @@
-import { NatsClient, log, createModuleMetrics } from '@eeveebot/libeevee';
+import { NatsClient, log, createModuleMetrics, sendChatMessage } from '@eeveebot/libeevee';
 import { colorizeForPlatform } from '../utils/colorize.mjs';
 
 const metrics = createModuleMetrics('emote');
@@ -15,7 +15,7 @@ export async function handleIdCommand({
   // Subscribe to command execution messages for id
   const idCommandSub = nats.subscribe(
     `command.execute.${commandUUID}`,
-    (subject, message) => {
+    async (subject, message) => {
       metrics.recordNatsSubscribe(subject);
       const startTime = Date.now();
       try {
@@ -49,20 +49,14 @@ export async function handleIdCommand({
         // Colorize for IRC platform
         responseText = colorizeForPlatform(responseText, data.platform);
 
-        // Send response on chat.message.outgoing.$PLATFORM.$INSTANCE.$CHANNEL
-        const response = {
+        await sendChatMessage(nats, {
           channel: data.channel,
           network: data.network,
           instance: data.instance,
           platform: data.platform,
           text: responseText,
           trace: data.trace,
-          type: 'message.outgoing',
-        };
-
-        const outgoingTopic = `chat.message.outgoing.${data.platform}.${data.instance}.${data.channel}`;
-        void nats.publish(outgoingTopic, JSON.stringify(response));
-        metrics.recordNatsPublish('command_response');
+        }, metrics);
 
         // Record successful command execution
         metrics.recordCommand(

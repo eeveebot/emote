@@ -1,4 +1,4 @@
-import { NatsClient, log, createModuleMetrics } from '@eeveebot/libeevee';
+import { NatsClient, log, createModuleMetrics, sendChatMessage } from '@eeveebot/libeevee';
 
 const metrics = createModuleMetrics('emote');
 
@@ -14,7 +14,7 @@ export async function handleIntenseCommand({
   // Subscribe to command execution messages for intense
   const intenseCommandSub = nats.subscribe(
     `command.execute.${commandUUID}`,
-    (subject, message) => {
+    async (subject, message) => {
       metrics.recordNatsSubscribe(subject);
       const startTime = Date.now();
       try {
@@ -31,20 +31,14 @@ export async function handleIntenseCommand({
         // Extract the text to intensify
         const textToIntensify = data.text;
 
-        // Send response on chat.message.outgoing.$PLATFORM.$INSTANCE.$CHANNEL
-        const response = {
+        await sendChatMessage(nats, {
           channel: data.channel,
           network: data.network,
           instance: data.instance,
           platform: data.platform,
           text: `[${textToIntensify} intensifies]`,
           trace: data.trace,
-          type: 'message.outgoing',
-        };
-
-        const outgoingTopic = `chat.message.outgoing.${data.platform}.${data.instance}.${data.channel}`;
-        void nats.publish(outgoingTopic, JSON.stringify(response));
-        metrics.recordNatsPublish('command_response');
+        }, metrics);
 
         // Record successful command execution
         metrics.recordCommand(
