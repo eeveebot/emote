@@ -17,6 +17,7 @@ import {
 } from '@eeveebot/libeevee';
 import {
   registerAllCommands,
+  setupCommandHandlers,
 } from './commandRegistry.mjs';
 
 // Initialize module-scoped metrics recorder
@@ -64,6 +65,10 @@ async function registerEmoteCommands(): Promise<void> {
 
 // Register commands at startup
 await registerEmoteCommands();
+
+// Subscribe to command execution messages
+const commandSubs = await setupCommandHandlers(nats);
+natsSubscriptions.push(...commandSubs);
 
 // Subscribe to stats.uptime and stats.emit.request
 const statsSubs = registerStatsHandlers({ nats, moduleName: 'emote', startTime: moduleStartTime, metrics });
