@@ -1,5 +1,6 @@
-import { NatsClient, log } from '@eeveebot/libeevee';
-import { recordNatsPublish } from './lib/metrics.mjs';
+import { NatsClient, log, createModuleMetrics, RateLimitConfig } from '@eeveebot/libeevee';
+
+const metrics = createModuleMetrics('emote');
 import { handleDunnoCommand } from './commands/dunno.mjs';
 import { handleShrugCommand } from './commands/shrug.mjs';
 import { handleDudeweedCommand } from './commands/dudeweed.mjs';
@@ -39,27 +40,10 @@ export interface CommandRegistration {
   ratelimit: RateLimitConfig;
 }
 
-export interface RateLimitConfig {
-  mode: 'enqueue' | 'drop';
-  level: 'channel' | 'user' | 'global';
-  limit: number;
-  interval: string;
-}
+import { RateLimitConfig } from '@eeveebot/libeevee';
 
 // Update the ratelimit property in CommandRegistration to use the proper type
-export interface CommandRegistration {
-  type: 'command.register';
-  commandUUID: string;
-  commandDisplayName: string;
-  platform: string;
-  network: string;
-  instance: string;
-  channel: string;
-  user: string;
-  regex: string;
-  platformPrefixAllowed: boolean;
-  ratelimit: RateLimitConfig;
-}
+export { RateLimitConfig } from '@eeveebot/libeevee';
 
 export async function registerAllCommands(
   nats: InstanceType<typeof NatsClient>,
@@ -216,7 +200,7 @@ export async function registerAllCommands(
   for (const registration of commandRegistrations) {
     try {
       await nats.publish('command.register', JSON.stringify(registration));
-      recordNatsPublish('command.register', 'command_registration');
+      metrics.recordNatsPublish('command.register', 'command_registration');
       log.info(
         `Registered ${registration.commandDisplayName} command with router`,
         {

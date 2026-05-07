@@ -1,12 +1,7 @@
-import { NatsClient, log } from '@eeveebot/libeevee';
+import { NatsClient, log, createModuleMetrics } from '@eeveebot/libeevee';
 import { colorizeForPlatform } from '../utils/colorize.mjs';
-import {
-  recordEmoteCommand,
-  recordProcessingTime,
-  recordEmoteError,
-  recordNatsPublish,
-  recordNatsSubscribe,
-} from '../lib/metrics.mjs';
+
+const metrics = createModuleMetrics('emote');
 
 export interface CommandHandlerParams {
   nats: InstanceType<typeof NatsClient>;
@@ -21,7 +16,7 @@ export async function handleDoubledownyCommand({
   const doubledownyCommandSub = nats.subscribe(
     `command.execute.${commandUUID}`,
     (subject, message) => {
-      recordNatsSubscribe(subject);
+      metrics.recordNatsSubscribe(subject);
       const startTime = Date.now();
       try {
         const data = JSON.parse(message.string());
@@ -54,12 +49,12 @@ export async function handleDoubledownyCommand({
         const outgoingTopic = `chat.message.outgoing.${data.platform}.${data.instance}.${data.channel}`;
         // Send twice for doubledowny
         void nats.publish(outgoingTopic, JSON.stringify(response));
-        recordNatsPublish(outgoingTopic, 'command_response');
+        metrics.recordNatsPublish(outgoingTopic, 'command_response');
         void nats.publish(outgoingTopic, JSON.stringify(response));
-        recordNatsPublish(outgoingTopic, 'command_response');
+        metrics.recordNatsPublish(outgoingTopic, 'command_response');
 
         // Record successful command execution
-        recordEmoteCommand(
+        metrics.recordCommand(
           data.platform,
           data.network,
           data.channel,
@@ -80,7 +75,7 @@ export async function handleDoubledownyCommand({
           'channel' in error
         ) {
           // If we have the data, record with specific details
-          recordEmoteCommand(
+          metrics.recordCommand(
             error.platform,
             error.network,
             error.channel,
@@ -88,18 +83,18 @@ export async function handleDoubledownyCommand({
           );
         } else {
           // Otherwise record with unknown details
-          recordEmoteCommand(
+          metrics.recordCommand(
             'unknown',
             'unknown',
             'unknown',
             'error'
           );
         }
-        recordEmoteError('process_error');
+        metrics.recordError('process_error');
       } finally {
         // Record processing time
         const duration = Date.now() - startTime;
-        recordProcessingTime(duration / 1000); // Convert to seconds
+        metrics.recordProcessingTime(duration / 1000); // Convert to seconds
       }
     }
   );
