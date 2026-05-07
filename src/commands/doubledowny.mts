@@ -49,9 +49,9 @@ export async function handleDoubledownyCommand({
         const outgoingTopic = `chat.message.outgoing.${data.platform}.${data.instance}.${data.channel}`;
         // Send twice for doubledowny
         void nats.publish(outgoingTopic, JSON.stringify(response));
-        metrics.recordNatsPublish(outgoingTopic, 'command_response');
+        metrics.recordNatsPublish('command_response');
         void nats.publish(outgoingTopic, JSON.stringify(response));
-        metrics.recordNatsPublish(outgoingTopic, 'command_response');
+        metrics.recordNatsPublish('command_response');
 
         // Record successful command execution
         metrics.recordCommand(

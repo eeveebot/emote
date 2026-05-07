@@ -61,7 +61,7 @@ export async function handleDunnoCommand({
 
         const outgoingTopic = `chat.message.outgoing.${data.platform}.${data.instance}.${data.channel}`;
         void nats.publish(outgoingTopic, JSON.stringify(response));
-        metrics.recordNatsPublish(outgoingTopic, 'command_response');
+        metrics.recordNatsPublish('command_response');
 
         // Record successful command execution
         metrics.recordCommand(

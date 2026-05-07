@@ -49,11 +49,11 @@ export async function handleTripledownyCommand({
         const outgoingTopic = `chat.message.outgoing.${data.platform}.${data.instance}.${data.channel}`;
         // Send three times for tripledowny
         void nats.publish(outgoingTopic, JSON.stringify(response));
-        metrics.recordNatsPublish(outgoingTopic, 'command_response');
+        metrics.recordNatsPublish('command_response');
         void nats.publish(outgoingTopic, JSON.stringify(response));
-        metrics.recordNatsPublish(outgoingTopic, 'command_response');
+        metrics.recordNatsPublish('command_response');
         void nats.publish(outgoingTopic, JSON.stringify(response));
-        metrics.recordNatsPublish(outgoingTopic, 'command_response');
+        metrics.recordNatsPublish('command_response');
 
         // Record successful command execution
         metrics.recordCommand(

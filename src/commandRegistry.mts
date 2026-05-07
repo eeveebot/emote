@@ -40,11 +40,6 @@ export interface CommandRegistration {
   ratelimit: RateLimitConfig;
 }
 
-import { RateLimitConfig } from '@eeveebot/libeevee';
-
-// Update the ratelimit property in CommandRegistration to use the proper type
-export { RateLimitConfig } from '@eeveebot/libeevee';
-
 export async function registerAllCommands(
   nats: InstanceType<typeof NatsClient>,
   rateLimitConfig: RateLimitConfig
@@ -200,7 +195,7 @@ export async function registerAllCommands(
   for (const registration of commandRegistrations) {
     try {
       await nats.publish('command.register', JSON.stringify(registration));
-      metrics.recordNatsPublish('command.register', 'command_registration');
+      metrics.recordNatsPublish('command_registration');
       log.info(
         `Registered ${registration.commandDisplayName} command with router`,
         {
