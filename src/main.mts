@@ -5,7 +5,6 @@
 
 import {
   NatsClient,
-  log,
   createNatsConnection,
   registerGracefulShutdown,
   createModuleMetrics,
@@ -14,13 +13,10 @@ import {
   defaultRateLimit,
   initializeSystemMetrics,
   setupHttpServer,
-  registerHelp,
-  HelpEntry,
   registerStatsHandlers
 } from '@eeveebot/libeevee';
 import {
   registerAllCommands,
-  setupCommandHandlers,
 } from './commandRegistry.mjs';
 
 // Initialize module-scoped metrics recorder
