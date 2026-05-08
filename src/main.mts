@@ -26,12 +26,7 @@ const metrics = createModuleMetrics('emote');
 // Initialize system metrics
 initializeSystemMetrics('emote');
 
-// Setup HTTP server for metrics and health checks
-setupHttpServer({
-  port: process.env.HTTP_API_PORT || '9000',
-  serviceName: 'emote',
-  natsClients: natsClients,
-});
+
 
 // Record module startup time for uptime tracking
 const moduleStartTime = Date.now();
@@ -42,6 +37,13 @@ interface EmoteConfig {
 }
 
 const natsClients: InstanceType<typeof NatsClient>[] = [];
+
+// Setup HTTP server for metrics and health checks
+setupHttpServer({
+  port: process.env.HTTP_API_PORT || '9000',
+  serviceName: 'emote',
+  natsClients: natsClients,
+});
 const natsSubscriptions: Array<Promise<string | boolean>> = [];
 
 // Load configuration at startup
