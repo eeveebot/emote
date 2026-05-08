@@ -30,6 +30,7 @@ initializeSystemMetrics('emote');
 setupHttpServer({
   port: process.env.HTTP_API_PORT || '9000',
   serviceName: 'emote',
+  natsClients: natsClients,
 });
 
 // Record module startup time for uptime tracking
