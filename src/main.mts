@@ -13,7 +13,9 @@ import {
   defaultRateLimit,
   initializeSystemMetrics,
   setupHttpServer,
-  registerStatsHandlers
+  registerStatsHandlers,
+  registerHelp,
+  HelpEntry,
 } from '@eeveebot/libeevee';
 import {
   registerAllCommands,
@@ -76,3 +78,72 @@ natsSubscriptions.push(...commandSubs);
 // Subscribe to stats.uptime and stats.emit.request
 const statsSubs = registerStatsHandlers({ nats, moduleName: 'emote', startTime: moduleStartTime, metrics });
 natsSubscriptions.push(...statsSubs);
+
+// Emote help entries
+const emoteHelp: HelpEntry[] = [
+  {
+    command: 'dunno',
+    descr: 'Shrug with style',
+    params: [],
+  },
+  {
+    command: 'shrug',
+    descr: '¯\\_(ツ)_/¯',
+    params: [],
+  },
+  {
+    command: 'dudeweed',
+    descr: 'Dude weed lmao',
+    params: [],
+  },
+  {
+    command: 'downy',
+    descr: 'Downy emote',
+    params: [],
+  },
+  {
+    command: 'doubledowny',
+    descr: 'Double downy emote',
+    params: [],
+  },
+  {
+    command: 'tripledowny',
+    descr: 'Triple downy emote',
+    params: [],
+  },
+  {
+    command: 'rainbowdowny',
+    descr: 'Rainbow downy emote',
+    params: [],
+  },
+  {
+    command: 'id',
+    descr: 'ID emote',
+    params: [],
+  },
+  {
+    command: 'ld',
+    descr: 'LD emote',
+    params: [],
+  },
+  {
+    command: 'lv',
+    descr: 'LV emote',
+    params: [],
+  },
+  {
+    command: 'intense',
+    descr: 'Intense emote',
+    params: [
+      {
+        param: 'text',
+        required: true,
+        descr: 'The text to intense-ify',
+      },
+    ],
+  },
+];
+
+// Register help information
+const helpSubs = await registerHelp(nats, 'emote', emoteHelp, metrics);
+natsSubscriptions.push(...helpSubs);
