@@ -17,6 +17,7 @@ import {
   registerCommand,
   registerHelp,
   HelpEntry,
+  NatsSubscriptionResult,
 } from '@eeveebot/libeevee';
 import { handleDunnoCommand } from './commands/dunno.mjs';
 import { handleShrugCommand } from './commands/shrug.mjs';
@@ -65,7 +66,7 @@ setupHttpServer({
   serviceName: 'emote',
   natsClients: natsClients,
 });
-const natsSubscriptions: Array<Promise<string | boolean>> = [];
+const natsSubscriptions: Array<Promise<NatsSubscriptionResult>> = [];
 
 // Load configuration at startup
 const emoteConfig = loadModuleConfig<EmoteConfig>({});

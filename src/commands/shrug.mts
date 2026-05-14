@@ -1,4 +1,4 @@
-import { NatsClient, log, createModuleMetrics, sendChatMessage } from '@eeveebot/libeevee';
+import { NatsClient, log, createModuleMetrics, sendChatMessage, NatsSubscriptionResult } from '@eeveebot/libeevee';
 import { colorizeForPlatform } from '../utils/colorize.mjs';
 
 const metrics = createModuleMetrics('emote');
@@ -11,7 +11,7 @@ export interface CommandHandlerParams {
 export async function handleShrugCommand({
   nats,
   commandUUID,
-}: CommandHandlerParams): Promise<string | boolean> {
+}: CommandHandlerParams): Promise<NatsSubscriptionResult> {
   // Subscribe to command execution messages for shrug
   const shrugCommandSub = nats.subscribe(
     `command.execute.${commandUUID}`,

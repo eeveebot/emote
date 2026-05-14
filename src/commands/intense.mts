@@ -1,4 +1,4 @@
-import { NatsClient, log, createModuleMetrics, sendChatMessage } from '@eeveebot/libeevee';
+import { NatsClient, log, createModuleMetrics, sendChatMessage, NatsSubscriptionResult } from '@eeveebot/libeevee';
 
 const metrics = createModuleMetrics('emote');
 
@@ -10,7 +10,7 @@ export interface CommandHandlerParams {
 export async function handleIntenseCommand({
   nats,
   commandUUID,
-}: CommandHandlerParams): Promise<string | boolean> {
+}: CommandHandlerParams): Promise<NatsSubscriptionResult> {
   // Subscribe to command execution messages for intense
   const intenseCommandSub = nats.subscribe(
     `command.execute.${commandUUID}`,
