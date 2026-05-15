@@ -18,8 +18,9 @@ export async function handleDudeweedCommand({
     async (subject, message) => {
       metrics.recordNatsSubscribe(subject);
       const startTime = Date.now();
+      let data: any = {};
       try {
-        const data = JSON.parse(message.string());
+        data = JSON.parse(message.string());
         log.info('Received command.execute for dudeweed', {
           producer: 'emote',
           platform: data.platform,
