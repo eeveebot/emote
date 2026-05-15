@@ -81,9 +81,9 @@ export async function handleIdCommand({
         ) {
           // If we have the data, record with specific details
           metrics.recordCommand(
-            error.platform,
-            error.network,
-            error.channel,
+            (error as { platform: string; network: string; channel: string }).platform,
+            (error as { platform: string; network: string; channel: string }).network,
+            (error as { platform: string; network: string; channel: string }).channel,
             'error'
           );
         } else {
