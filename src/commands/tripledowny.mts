@@ -76,29 +76,12 @@ export async function handleTripledownyCommand({
         });
 
         // Record failed command execution
-        if (
-          typeof error === 'object' &&
-          error !== null &&
-          'platform' in error &&
-          'network' in error &&
-          'channel' in error
-        ) {
-          // If we have the data, record with specific details
-          metrics.recordCommand(
-            (error as { platform: string; network: string; channel: string }).platform,
-            (error as { platform: string; network: string; channel: string }).network,
-            (error as { platform: string; network: string; channel: string }).channel,
-            'error'
-          );
-        } else {
-          // Otherwise record with unknown details
-          metrics.recordCommand(
-            'unknown',
-            'unknown',
-            'unknown',
-            'error'
-          );
-        }
+        metrics.recordCommand(
+          data.platform,
+          data.network,
+          data.channel,
+          'error'
+        );
         metrics.recordError('process_error');
       } finally {
         // Record processing time
