@@ -1,5 +1,6 @@
 import { NatsClient, log, createModuleMetrics, sendChatMessage, NatsSubscriptionResult } from '@eeveebot/libeevee';
 import { randomColorForPlatform as colorizeForPlatform } from '@eeveebot/libeevee';
+import type { NatsCommandData } from '../lib/types.mjs';
 
 const metrics = createModuleMetrics('emote');
 
@@ -18,7 +19,7 @@ export async function handleDunnoCommand({
     async (subject, message) => {
       metrics.recordNatsSubscribe(subject);
       const startTime = Date.now();
-      let data: any = {};
+      let data: NatsCommandData = {} as NatsCommandData;
       try {
         data = JSON.parse(message.string());
         log.info('Received command.execute for dunno', {
