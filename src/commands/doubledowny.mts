@@ -1,5 +1,5 @@
 import { NatsClient, log, createModuleMetrics, sendChatMessage, NatsSubscriptionResult } from '@eeveebot/libeevee';
-import { colorizeForPlatform } from '../utils/colorize.mjs';
+import { randomColorForPlatform as colorizeForPlatform } from '@eeveebot/libeevee';
 
 const metrics = createModuleMetrics('emote');
 
