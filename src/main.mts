@@ -30,6 +30,7 @@ import { handleIdCommand } from './commands/id.mjs';
 import { handleLdCommand } from './commands/ld.mjs';
 import { handleLvCommand } from './commands/lv.mjs';
 import { handleIntenseCommand } from './commands/intense.mjs';
+import fs from 'node:fs';
 
 // Command UUIDs
 const DUNNO_UUID = '0ac87398-83b6-42a1-8aaa-86ac3b6fb520';
@@ -52,6 +53,7 @@ initializeSystemMetrics('emote');
 
 // Record module startup time for uptime tracking
 const moduleStartTime = Date.now();
+const moduleVersion = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version as string;
 
 // Emote module configuration interface
 interface EmoteConfig {
@@ -196,7 +198,7 @@ natsSubscriptions.push(handleLvCommand({ nats, commandUUID: LV_UUID }));
 natsSubscriptions.push(handleIntenseCommand({ nats, commandUUID: INTENSE_UUID }));
 
 // Subscribe to stats.uptime and stats.emit.request
-const statsSubs = registerStatsHandlers({ nats, moduleName: 'emote', startTime: moduleStartTime, metrics });
+const statsSubs = registerStatsHandlers({ nats, moduleName: 'emote', startTime: moduleStartTime, version: moduleVersion, metrics });
 natsSubscriptions.push(...statsSubs);
 
 // Emote help entries
